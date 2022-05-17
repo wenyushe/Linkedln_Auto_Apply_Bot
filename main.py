@@ -11,22 +11,21 @@ import json
 
 class EasyApplyLinkedin:
 
+    # Initializes parameters
     def __init__(self, data):
-        """Parameter initialization"""
-
         self.email = data['email']
         self.password = data['password']
         self.keywords = data['keywords']
         self.location = data['location']
         self.driver = webdriver.Chrome(data['driver_path'])
 
+    # Function: logs into Linkedln account
     def login_linkedin(self):
-        """This function logs into your personal LinkedIn profile"""
 
-        # go to the LinkedIn login url
+        # open Linkedln on browser
         self.driver.get("https://www.linkedin.com/login")
 
-        # introduce email and password and hit enter
+        # login: enter email and password
         login_email = self.driver.find_element(by=By.NAME, value='session_key')
         login_email.clear()
         login_email.send_keys(self.email)
@@ -35,8 +34,8 @@ class EasyApplyLinkedin:
         login_pass.send_keys(self.password)
         login_pass.send_keys(Keys.RETURN)
     
+    # Function: searches for jobs based on keyword
     def job_search(self):
-        """This function goes to the 'Jobs' section a looks for all the jobs that matches the keywords and location"""
 
         # go to Jobs
         jobs_link = self.driver.find_element_by_link_text('Jobs')
@@ -49,13 +48,9 @@ class EasyApplyLinkedin:
         search_keywords.send_keys(self.keywords)
         time.sleep(2)
         search_keywords.send_keys(Keys.RETURN)
-        # search_location = self.driver.find_element_by_xpath("//input[starts-with(@id, 'jobs-search-box-location')]")
-        # search_location.clear()
-        # search_location.send_keys(self.location)
-        # search_location.send_keys(Keys.RETURN)
 
+    # Function: applies filters below
     def filter(self):
-        """This function filters all the job results by 'Easy Apply'"""
 
         # filter easy apply
         easy_apply_button = self.driver.find_element_by_xpath("//button[@aria-label='Easy Apply filter.']")
@@ -74,8 +69,8 @@ class EasyApplyLinkedin:
         apply_filter_button.click()
         time.sleep(1)
 
+    # NEEDS WORK: Function: finds all jobs shown in results
     def find_offers(self):
-        """This function finds all the offers through all the pages result of the search and filter"""
 
         # find the total amount of results (if the results are above 24-more than one page-, we will scroll trhough all available pages)
         total_results = self.driver.find_element_by_class_name("display-flex.t-12.t-black--light.t-normal")
@@ -123,8 +118,8 @@ class EasyApplyLinkedin:
         else:
             self.close_session()
 
+    # Function: submits application for seleted job
     def submit_apply(self,job_add):
-        """This function submits the application for the job add found"""
 
         print('You are applying to the position of: ', job_add.text)
         job_add.click()
@@ -139,12 +134,12 @@ class EasyApplyLinkedin:
             pass
         time.sleep(1)
 
-        # try to submit if submit application is available...
+        # try to submit if submit application is available
         try:
             submit = self.driver.find_element_by_xpath("//button[@data-control-name='submit_unify']")
             submit.send_keys(Keys.RETURN)
         
-        # ... if not available, discard application and go to next
+        # if not available, discard application and go to next
         except NoSuchElementException:
             print('Not direct application, going to next...')
             try:
@@ -159,15 +154,15 @@ class EasyApplyLinkedin:
 
         time.sleep(1)
 
+    # Function: closes window after finishing all applications
     def close_session(self):
         """This function closes the actual session"""
         
         print('End of the session, see you later!')
         self.driver.close()
 
+    # Function: main apply function
     def apply(self):
-        """Apply to job offers"""
-
         self.driver.maximize_window()
         self.login_linkedin()
         time.sleep(3)
@@ -182,8 +177,9 @@ class EasyApplyLinkedin:
 
 if __name__ == '__main__':
 
+    # loads configurations
     with open('config.json') as config_file:
         data = json.load(config_file)
-
+    # runs bot
     bot = EasyApplyLinkedin(data)
     bot.apply()
