@@ -3,5 +3,5 @@
     "password" : "your-password",
     "keywords" : "ex: software intern",
     "location" : "desired-job-location",
-    "driver_path" : "path-of-your-chromedriver"
+    "driver_path" : "path-to-your-chromedriver"
 }
